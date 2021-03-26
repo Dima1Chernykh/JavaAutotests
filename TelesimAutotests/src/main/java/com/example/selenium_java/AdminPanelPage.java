@@ -1,6 +1,5 @@
 package com.example.selenium_java;
 
-
 import com.codeborne.selenide.SelenideElement;
 import org.openqa.selenium.By;
 import java.util.Random;
@@ -51,14 +50,42 @@ public class AdminPanelPage {
         public SelenideElement devicesDevices = $(By.xpath("/html/body/div[1]/div/div/div/nav/div[1]/div[2]/div[3]/div[2]/div[2]/a"));
     public SelenideElement logout  = $(By.xpath("/html/body/div[1]/div/div/div/nav/div[1]/div[2]/div[4]/div[2]"));
 
-// random string generation
-public static String generateRandomHexString (int length){
-    Random r = new Random();
-    StringBuffer sb = new StringBuffer();
-    while(sb.length() < length){
-        sb.append(Integer.toHexString(r.nextInt()));
+    // random string generation
+    public static String generateRandomHexString (int length){
+        Random r = new Random();
+        StringBuffer sb = new StringBuffer();
+        while(sb.length() < length){
+            sb.append(Integer.toHexString(r.nextInt()));
+        }
+        return sb.toString().substring(0, length);
     }
-    return sb.toString().substring(0, length);
-}
-
+    public static void createAndChooseNewAccount () throws InterruptedException {
+        AdminPanelPage adminPage = new AdminPanelPage();
+        adminPage.accounts.shouldBe(visible);
+        adminPage.accounts.click();
+        $(By.xpath("/html/body/div[1]/div/div/div/main/div/div[2]/div/div/div[1]/div[1]")).shouldBe(visible);
+        SelenideElement createUserButton = $(By.xpath("/html/body/div[1]/div/div/div/main/div/div[2]/div/div/div[1]/div[2]/div[5]"));
+        createUserButton.click();
+        String fullName = adminPage.generateRandomHexString(8);
+        String email = adminPage.generateRandomHexString(5) + "@gmail.com";
+        String password = "A" +  adminPage.generateRandomHexString(9);
+        SelenideElement fullNameInput = $(By.xpath("/html/body/div[1]/div/div[3]/div/div/div/div[3]/span/div[1]/div/div/div[1]/div/input"));
+        SelenideElement emailInput = $(By.xpath("/html/body/div[1]/div/div[3]/div/div/div/div[3]/span/div[2]/div/div/div[1]/div/input"));
+        SelenideElement passwordInput = $(By.xpath("/html/body/div[1]/div/div[3]/div/div/div/div[3]/span/div[5]/div/div/div[1]/div/input"));
+        SelenideElement confirmPasswordInput = $(By.xpath("/html/body/div[1]/div/div[3]/div/div/div/div[3]/span/div[6]/div/div/div[1]/div/input"));
+        fullNameInput.sendKeys(fullName);
+        String randomFullname = fullNameInput.getAttribute("value");
+        emailInput.sendKeys(email);
+        String randomEmail = emailInput.getAttribute("value");
+        passwordInput.sendKeys(password);
+        String randomPassword = passwordInput.getAttribute("value");
+        confirmPasswordInput.sendKeys(randomPassword);
+        SelenideElement confirmButton = $(By.xpath("/html/body/div[1]/div/div[3]/div/div/div/div[4]/div[1]"));
+        confirmButton.click();
+        SelenideElement searchInput = $(By.xpath("/html/body/div[1]/div/div/div/main/div/div[2]/div/div/div[1]/div[2]/div[1]/div/input"));
+        searchInput.sendKeys(randomFullname);
+        Thread.sleep(1000);
+        SelenideElement newUser = $(By.xpath("/html/body/div[1]/div/div/div/main/div/div[2]/div/div/div[2]/div[1]/table/tbody/tr/td[2]/span[1]"));
+        newUser.click();
+    }
 }
